@@ -9,8 +9,11 @@ on:
       - main
   workflow_dispatch:
 
+# ANGEPASST: Wir brauchen Schreibrechte für Pages und das ID-Token
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   tests-and-coverage:
@@ -25,7 +28,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      # NEU: ReportGenerator installieren
       - name: Install ReportGenerator
         run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
@@ -42,7 +44,6 @@ jobs:
             --results-directory artifacts/test-results \
             --collect:"XPlat Code Coverage"
 
-      # NEU: Aus der Cobertura-XML den HTML-Report generieren
       - name: Generate HTML Coverage Report
         if: always()
         run: |
@@ -51,7 +52,7 @@ jobs:
             -targetdir:"artifacts/coverage-html" \
             -reporttypes:"Html"
 
-      - name: Summarize test and coverage results
+      - name: Summarize test and coverage results (Python)
         if: always()
         run: |
           python - <<'PY'
@@ -79,26 +80,36 @@ jobs:
           - Erfolgreich: **{passed}**
           - Fehlgeschlagen: **{failed}**
           - Line Coverage: **{line_rate:.2f}%** ({lines_covered}/{lines_valid})
-          - Hinweis: Dieses Demo-Repo ist buildbar; der CI-Lauf sollte mit **5 erfolgreichen Tests** enden.
           """
-
           with open(Path.cwd() / 'coverage-summary.md', 'w', encoding='utf-8') as handle:
               handle.write(summary)
           PY
           cat coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload test and coverage artifacts
+      # NEU: Spezieller Upload für GitHub Pages (statt normalem Artifact)
+      - name: Upload Pages artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: test-and-coverage-artifacts
-          # ANGEPASST: Den neuen HTML-Ordner zu den Artifacts hinzufügen
-          path: |
-            artifacts/test-results/**/*.trx
-            artifacts/test-results/**/coverage.cobertura.xml
-            coverage-summary.md
-            artifacts/coverage-html/
+          path: artifacts/coverage-html/
 
       - name: Fail workflow when tests fail unexpectedly
         if: steps.test_run.outcome == 'failure'
         run: exit 1
+
+  # NEU: Eigener Job, der den Report als Webseite veröffentlicht
+  deploy-to-pages:
+    needs: tests-and-coverage
+    runs-on: ubuntu-latest
+    # GANZ WICHTIG: Wir deployen die Webseite NUR, wenn Änderungen in 'main' gepusht werden.
+    # Pull Requests sollen die Haupt-Webseite nicht überschreiben!
+    if: github.ref == 'refs/heads/main'
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
