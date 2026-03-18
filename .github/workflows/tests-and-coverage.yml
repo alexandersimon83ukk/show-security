@@ -66,7 +66,7 @@ jobs:
           - Erfolgreich: **{passed}**
           - Fehlgeschlagen: **{failed}**
           - Line Coverage: **{line_rate:.2f}%** ({lines_covered}/{lines_valid})
-          - Hinweis: Dieses Demo-Repo ist absichtlich so aufgebaut, dass **4 Tests bestehen und 1 Test fehlschlägt**.
+          - Hinweis: Dieses Demo-Repo ist buildbar; der CI-Lauf sollte mit **5 erfolgreichen Tests** enden.
           """
 
           with open(Path.cwd() / 'coverage-summary.md', 'w', encoding='utf-8') as handle:
@@ -84,6 +84,6 @@ jobs:
             artifacts/test-results/**/coverage.cobertura.xml
             coverage-summary.md
 
-      - name: Fail workflow when the intentional test fails
+      - name: Fail workflow when tests fail unexpectedly
         if: steps.test_run.outcome == 'failure'
         run: exit 1

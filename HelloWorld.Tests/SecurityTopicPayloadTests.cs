@@ -43,11 +43,11 @@ public class SecurityTopicPayloadTests
     }
 
     [TestMethod]
-    public void CreateJsonSummary_ShouldFail_ToShowABrokenUnitTest()
+    public void CreateJsonSummary_ShouldRemainBuildable_AndContainCodeQl()
     {
         var payload = new SecurityTopicPayload();
         var json = payload.CreateJsonSummary();
 
-        StringAssert.DoesNotContain(json, "CodeQL");
+        StringAssert.Contains(json, "CodeQL");
     }
 }
