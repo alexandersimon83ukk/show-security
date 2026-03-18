@@ -25,6 +25,7 @@ jobs:
           - Workflow: `codeql.yml`
           - Fokus: C# und GitHub Actions
           - Zweck: Schwachstellen und unsichere Muster früh sichtbar machen
+          - Demo-Datei: `Samples/UserRepository.cs` mit absichtlicher SQL-String-Konkatenation
 
           ## 2. Dependency Review
           - Workflow: `dependency-review.yml`

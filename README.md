@@ -10,6 +10,7 @@ Die zentralen Sicherheits-Themen werden über Workflows in `.github/workflows/` 
 - **Dependency Review** für Pull Requests.
 - **Sicherheits-Übersicht als Workflow Summary** mit den wichtigsten GitHub-Security-Themen.
 - **Minimale Workflow-Permissions** als Teil der Workflow-Härtung.
+- **Ein absichtlich unsicheres SQL-Beispiel** in `Samples/UserRepository.cs`, damit CodeQL einen nachvollziehbaren Befund zeigen kann.
 
 ## Workflows
 
@@ -21,6 +22,8 @@ Zeigt GitHub Code Scanning mit CodeQL für zwei Bereiche:
 - `actions`
 
 Zusätzlich werden enge Berechtigungen gesetzt und `security-extended` Queries aktiviert.
+
+Als bewusst verwundbares Beispiel dient `Samples/UserRepository.cs`: Dort wird `userInputUsername` per String-Konkatenation direkt in ein SQL-Statement geschrieben, damit CodeQL einen SQL-Injection-nahen Befund markieren kann.
 
 ### `dependency-review.yml`
 
@@ -44,6 +47,7 @@ Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersich
 - `.github/workflows/codeql.yml` – CodeQL Analyse
 - `.github/workflows/dependency-review.yml` – Dependency Review für PRs
 - `.github/workflows/security-topics.yml` – Präsentations-Workflow für Security-Themen
+- `Samples/UserRepository.cs` – absichtlich unsicheres SQL-Beispiel für CodeQL
 - `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
 
 ## Hinweis
