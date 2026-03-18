@@ -49,12 +49,15 @@ Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersich
 - `.github/workflows/security-topics.yml` – Präsentations-Workflow für Security-Themen
 - `Samples/UserRepository.cs` – absichtlich unsicheres SQL-Beispiel für CodeQL
 - `Samples/SecurityTopicPayload.cs` – kleine JSON-Demo mit `System.Text.Json`
-- `HelloWorld.Tests/` – separates Testprojekt mit absichtlich fehlschlagendem Unit Test
+- `HelloWorld.Tests/` – separates Testprojekt mit 5 Unit Tests (4 erfolgreich, 1 absichtlich fehlschlagend)
+- `.github/workflows/tests-and-coverage.yml` – Testlauf plus Coverage-Auswertung im GitHub-UI
 - `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
 
 ## Tests
 
-Das zusätzliche Projekt `HelloWorld.Tests/` enthält bewusst einen **fehlschlagenden Unit Test**, damit im Demo-Setup auch ein roter Testlauf gezeigt werden kann.
+Das zusätzliche Projekt `HelloWorld.Tests/` enthält bewusst **5 Unit Tests**: **4 erfolgreich**, **1 fehlschlagend**. So kann im Demo-Setup gleichzeitig ein grüner Teil und ein roter Testlauf gezeigt werden.
+
+Der Workflow `tests-and-coverage.yml` sammelt außerdem Test- und Coverage-Daten und schreibt eine kompakte Coverage-Auswertung direkt in die GitHub Job Summary.
 
 ## Hinweis
 

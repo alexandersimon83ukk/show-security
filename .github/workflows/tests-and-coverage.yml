@@ -1,0 +1,89 @@
+name: Tests and Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests-and-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore test project
+        run: dotnet restore HelloWorld.Tests/HelloWorld.Tests.csproj
+
+      - name: Run tests with coverage
+        id: test_run
+        continue-on-error: true
+        run: |
+          dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj \
+            --configuration Release \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory artifacts/test-results \
+            --collect:"XPlat Code Coverage"
+
+      - name: Summarize test and coverage results
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          trx_file = next(Path('artifacts/test-results').rglob('*.trx'))
+          coverage_file = next(Path('artifacts/test-results').rglob('coverage.cobertura.xml'))
+
+          trx_root = ET.parse(trx_file).getroot()
+          ns = {'trx': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          counters = trx_root.find('.//trx:ResultSummary/trx:Counters', ns)
+          total = int(counters.attrib['total'])
+          passed = int(counters.attrib['passed'])
+          failed = int(counters.attrib['failed'])
+
+          coverage_root = ET.parse(coverage_file).getroot()
+          line_rate = float(coverage_root.attrib.get('line-rate', '0')) * 100
+          lines_covered = coverage_root.attrib.get('lines-covered', '0')
+          lines_valid = coverage_root.attrib.get('lines-valid', '0')
+
+          summary = f"""# Test- und Coverage-Auswertung
+
+          - Tests gesamt: **{total}**
+          - Erfolgreich: **{passed}**
+          - Fehlgeschlagen: **{failed}**
+          - Line Coverage: **{line_rate:.2f}%** ({lines_covered}/{lines_valid})
+          - Hinweis: Dieses Demo-Repo ist absichtlich so aufgebaut, dass **4 Tests bestehen und 1 Test fehlschlägt**.
+          """
+
+          with open(Path.cwd() / 'coverage-summary.md', 'w', encoding='utf-8') as handle:
+              handle.write(summary)
+          PY
+          cat coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test and coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-and-coverage-artifacts
+          path: |
+            artifacts/test-results/**/*.trx
+            artifacts/test-results/**/coverage.cobertura.xml
+            coverage-summary.md
+
+      - name: Fail workflow when the intentional test fails
+        if: steps.test_run.outcome == 'failure'
+        run: exit 1
