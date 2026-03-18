@@ -1,0 +1,42 @@
+name: Security Topics Overview
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-topics:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Write security topics summary
+        run: |
+          cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          # GitHub Security Themen in diesem Repo
+
+          Dieses Repository zeigt Security-Schwerpunkte direkt über GitHub Actions.
+
+          ## 1. Code Scanning mit CodeQL
+          - Workflow: `codeql.yml`
+          - Fokus: C# und GitHub Actions
+          - Zweck: Schwachstellen und unsichere Muster früh sichtbar machen
+
+          ## 2. Dependency Review
+          - Workflow: `dependency-review.yml`
+          - Fokus: Pull Requests
+          - Zweck: riskante Dependency-Änderungen direkt im Review sichtbar machen
+
+          ## 3. Workflow Hardening
+          - In allen Workflows werden minimale `permissions` gesetzt
+          - Das demonstriert das Prinzip Least Privilege für GitHub Actions
+
+          ## 4. Sichtbarkeit in GitHub
+          - Ergebnisse erscheinen im Actions-Tab
+          - CodeQL-Ergebnisse erscheinen zusätzlich im Security-/Code-scanning-Bereich
+          - Dependency Review erscheint direkt am Pull Request
+          EOF

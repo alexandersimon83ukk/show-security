@@ -2,19 +2,18 @@
 
 ## Charakter dieses Repositories
 
-Dieses Repository ist aktuell eine **Demo-Anwendung**, die Security-Konzepte schematisch zeigt. Die Implementierung dient vor allem zur Veranschaulichung und ist **nicht** als produktionsreife Sicherheitsarchitektur zu verstehen.
+Dieses Repository ist eine **Demonstration für GitHub-Security-Themen über GitHub Actions**. Der Schwerpunkt liegt auf der Sichtbarkeit von Security-Funktionen in GitHub und nicht auf einer produktionsreifen Applikation.
 
-## Gezeigte Sicherheitsprinzipien
+## Gezeigte Security-Themen
 
-- Eingaben validieren und auf einen erwarteten Zeichenvorrat begrenzen.
-- Secrets nicht im Klartext ausgeben.
-- Zugriffe anhand von Rollen und Aktionen einschränken.
-- Sicherheitsrelevante Ereignisse nachvollziehbar protokollieren.
-- Schutzmechanismen wie Rate Limiting als nächsten Ausbauschritt vorsehen.
+- Code Scanning mit CodeQL
+- Dependency Review bei Pull Requests
+- Gehärtete Workflow-Permissions
+- Sichtbare Security-Zusammenfassung über GitHub Actions Job Summaries
 
 ## Supported Versions
 
-Dieses Repository ist eine laufende Demo. Sicherheitsverbesserungen werden auf dem aktuellen Stand des Default-Branches vorgenommen.
+Dieses Repository ist eine laufende Demo. Änderungen und Verbesserungen erfolgen auf dem aktuellen Stand des Default-Branches.
 
 | Version | Supported |
 | ------- | --------- |
@@ -22,4 +21,4 @@ Dieses Repository ist eine laufende Demo. Sicherheitsverbesserungen werden auf d
 
 ## Reporting a Vulnerability
 
-Wenn du in diesem Demo-Repository eine echte Schwachstelle oder eine unsichere Darstellung von Sicherheitskonzepten findest, eröffne bitte ein Issue oder melde den Befund direkt an die Maintainer des Repositories.
+Wenn dir in diesem Demo-Repository eine unsichere Konfiguration oder ein problematischer Workflow auffällt, eröffne bitte ein Issue oder informiere die Maintainer des Repositories.

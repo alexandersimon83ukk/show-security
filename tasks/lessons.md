@@ -1,3 +1,4 @@
 # Lessons Learned
 
-- Wenn der Nutzer eine sauberere Struktur verlangt, darf die Hauptdatei (`Program.cs`) nur den Startpunkt enthalten; Fachlogik gehört in klar benannte Ordner und Klassen-Dateien.
+- Wenn der Nutzer die Richtung ändert, muss die vorherige Struktur konsequent entfernt werden statt nur weiter umgebaut zu werden.
+- Wenn der Fokus auf GitHub Actions liegt, sollte die eigentliche Demonstration über `.github/workflows/` erfolgen und nicht über unnötige lokale Anwendungslogik.

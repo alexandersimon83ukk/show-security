@@ -1,62 +1,51 @@
-# Security Showcase (C# Konsolenprojekt)
+# GitHub Security Themen via Actions
 
-Dieses Repository ist kein reines `Hallo Welt` mehr, sondern eine **kleine schematische Demo für Security-Features** in einem .NET-Konsolenprogramm.
+Dieses Repository zeigt **GitHub-Security-Themen direkt über GitHub Actions** statt über eine lokale Konsolen-Demo.
 
-## Was gezeigt wird
+## Was dieses Repo demonstriert
 
-Die Demo visualisiert bewusst einfach und nachvollziehbar:
+Die zentralen Sicherheits-Themen werden über Workflows in `.github/workflows/` sichtbar gemacht:
 
-- **Input Validation** für Benutzereingaben.
-- **Secret Handling** mit maskierter Ausgabe statt Klartext.
-- **Least Privilege** über einfache Rollen und erlaubte Aktionen.
-- **Audit Logging** als nachvollziehbare Sicherheits-Spur.
-- **Rate Limiting** als geplante nächste Ausbaustufe.
+- **Code Scanning mit CodeQL** für C# und GitHub Actions.
+- **Dependency Review** für Pull Requests.
+- **Sicherheits-Übersicht als Workflow Summary** mit den wichtigsten GitHub-Security-Themen.
+- **Minimale Workflow-Permissions** als Teil der Workflow-Härtung.
 
-## Ausführen
+## Workflows
 
-1. Stelle sicher, dass ein .NET SDK installiert ist, z. B. .NET 8.
-2. Im Verzeichnis mit `HelloWorld.csproj`:
-   - `dotnet build`
-   - `dotnet run`
+### `codeql.yml`
 
-### Optionale Demo-Parameter
+Zeigt GitHub Code Scanning mit CodeQL für zwei Bereiche:
 
-Du kannst Rolle und Aktion direkt übergeben:
+- `csharp`
+- `actions`
 
-```bash
-dotnet run -- admin approve-policy
-dotnet run -- operator rotate-keys
-dotnet run -- guest approve-policy
-```
+Zusätzlich werden enge Berechtigungen gesetzt und `security-extended` Queries aktiviert.
 
-Die Demo validiert die Aktion, maskiert Secrets in der Ausgabe und zeigt, ob eine Aktion für die angegebene Rolle erlaubt wäre.
+### `dependency-review.yml`
 
-### Secret für die Demo setzen
+Prüft Pull Requests auf riskante Dependency-Änderungen mit der offiziellen GitHub Dependency Review Action.
 
-Optional kannst du ein Secret über eine Umgebungsvariable setzen:
+### `security-topics.yml`
 
-```bash
-export SECURITY_DEMO_SECRET="prod-like-secret-9876"
-dotnet run -- operator rotate-keys
-```
+Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersicht in die GitHub Actions Job Summary. Damit kann man die Sicherheits-Themen direkt im Actions-Tab präsentieren.
 
-In der Konsolenausgabe wird dieses Secret **nur maskiert** dargestellt.
+## So zeigst du die Themen auf GitHub
 
+1. Repository nach GitHub pushen.
+2. Im Tab **Actions** die Workflows ausführen bzw. bei PRs triggern.
+3. Die Job Summaries und Security-Ergebnisse in GitHub zeigen:
+   - CodeQL / Code scanning
+   - Dependency Review in Pull Requests
+   - Workflow Summary mit den Security-Themen
 
-## Projektstruktur
+## Repo-Struktur
 
-Die Anwendung ist jetzt bewusst aufgeteilt, damit `Program.cs` sauber bleibt:
+- `.github/workflows/codeql.yml` – CodeQL Analyse
+- `.github/workflows/dependency-review.yml` – Dependency Review für PRs
+- `.github/workflows/security-topics.yml` – Präsentations-Workflow für Security-Themen
+- `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
 
-- `App/` enthält den Start-Orchestrator der Demo.
-- `Models/` enthält Rollen, States und Datenmodelle.
-- `Services/` enthält Sanitizing, Autorisierung, Audit-Erzeugung und Feature-Katalog.
-- `Presentation/` enthält die Konsolen-Ausgabe.
+## Hinweis
 
-## Ziel des Repos
-
-Das Projekt ist absichtlich klein gehalten, damit Security-Konzepte schnell gezeigt, erklärt und später erweitert werden können, z. B. mit:
-
-- echter Konfiguration aus `appsettings.json`
-- strukturierter Protokollierung
-- Rate Limiting
-- Policy-basierter Autorisierung
+Die eigentliche Demonstration passiert in GitHub selbst. Lokal ist dieses Repo absichtlich minimal gehalten.
