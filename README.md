@@ -49,7 +49,12 @@ Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersich
 - `.github/workflows/security-topics.yml` – Präsentations-Workflow für Security-Themen
 - `Samples/UserRepository.cs` – absichtlich unsicheres SQL-Beispiel für CodeQL
 - `Samples/SecurityTopicPayload.cs` – kleine JSON-Demo mit `System.Text.Json`
+- `HelloWorld.Tests/` – separates Testprojekt mit absichtlich fehlschlagendem Unit Test
 - `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
+
+## Tests
+
+Das zusätzliche Projekt `HelloWorld.Tests/` enthält bewusst einen **fehlschlagenden Unit Test**, damit im Demo-Setup auch ein roter Testlauf gezeigt werden kann.
 
 ## Hinweis
 

@@ -1,4 +1,4 @@
 # Lessons Learned
 
-- Wenn der Nutzer eine konkrete Library-Version vorgibt, sollte die Projektdatei exakt auf diese Referenz angepasst werden.
-- Kleine Ergänzungen wie neue Demo-Klassen sollten trotzdem klar benannt und in den Arbeitsnotizen dokumentiert werden.
+- Wenn der Nutzer explizit ein separates Testprojekt verlangt, sollte der Test nicht in das Hauptprojekt gemischt werden.
+- Bei Demo-Repositories können absichtlich fehlschlagende Tests sinnvoll sein, müssen aber klar als solche erkennbar benannt werden.
