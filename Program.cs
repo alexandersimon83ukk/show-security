@@ -1,4 +1,4 @@
-using System;
+using System.Text;
 
-Console.OutputEncoding = System.Text.Encoding.UTF8;
-Console.WriteLine("Hallo Welt!");
+Console.OutputEncoding = Encoding.UTF8;
+Console.WriteLine("Dieses Repo zeigt GitHub-Security-Themen über GitHub Actions. Siehe .github/workflows/.");

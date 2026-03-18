@@ -1,0 +1,115 @@
+name: Tests and Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# ANGEPASST: Wir brauchen Schreibrechte für Pages und das ID-Token
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  tests-and-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Restore test project
+        run: dotnet restore HelloWorld.Tests/HelloWorld.Tests.csproj
+
+      - name: Run tests with coverage
+        id: test_run
+        continue-on-error: true
+        run: |
+          dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj \
+            --configuration Release \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory artifacts/test-results \
+            --collect:"XPlat Code Coverage"
+
+      - name: Generate HTML Coverage Report
+        if: always()
+        run: |
+          reportgenerator \
+            -reports:"artifacts/test-results/**/coverage.cobertura.xml" \
+            -targetdir:"artifacts/coverage-html" \
+            -reporttypes:"Html"
+
+      - name: Summarize test and coverage results (Python)
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          trx_file = next(Path('artifacts/test-results').rglob('*.trx'))
+          coverage_file = next(Path('artifacts/test-results').rglob('coverage.cobertura.xml'))
+
+          trx_root = ET.parse(trx_file).getroot()
+          ns = {'trx': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          counters = trx_root.find('.//trx:ResultSummary/trx:Counters', ns)
+          total = int(counters.attrib['total'])
+          passed = int(counters.attrib['passed'])
+          failed = int(counters.attrib['failed'])
+
+          coverage_root = ET.parse(coverage_file).getroot()
+          line_rate = float(coverage_root.attrib.get('line-rate', '0')) * 100
+          lines_covered = coverage_root.attrib.get('lines-covered', '0')
+          lines_valid = coverage_root.attrib.get('lines-valid', '0')
+
+          summary = f"""# Test- und Coverage-Auswertung
+
+          - Tests gesamt: **{total}**
+          - Erfolgreich: **{passed}**
+          - Fehlgeschlagen: **{failed}**
+          - Line Coverage: **{line_rate:.2f}%** ({lines_covered}/{lines_valid})
+          """
+          with open(Path.cwd() / 'coverage-summary.md', 'w', encoding='utf-8') as handle:
+              handle.write(summary)
+          PY
+          cat coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      # NEU: Spezieller Upload für GitHub Pages (statt normalem Artifact)
+      - name: Upload Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/coverage-html/
+
+      - name: Fail workflow when tests fail unexpectedly
+        if: steps.test_run.outcome == 'failure'
+        run: exit 1
+
+  # NEU: Eigener Job, der den Report als Webseite veröffentlicht
+  deploy-to-pages:
+    needs: tests-and-coverage
+    runs-on: ubuntu-latest
+    # GANZ WICHTIG: Wir deployen die Webseite NUR, wenn Änderungen in 'main' gepusht werden.
+    # Pull Requests sollen die Haupt-Webseite nicht überschreiben!
+    if: github.ref == 'refs/heads/main'
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
