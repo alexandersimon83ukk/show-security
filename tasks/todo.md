@@ -1,17 +1,13 @@
 # Task Plan
 
 - [x] Prüfe Repository-Anweisungen, Nutzerfeedback und aktuellen Stand.
-- [x] Mache das separate Testprojekt wieder buildbar.
-- [x] Behalte die GitHub-Actions-Auswertung für Test- und Code-Coverage-Ergebnisse bei.
+- [x] Stelle klar, dass die relevante Validierung in diesem C#-Repo über `dotnet test` laufen soll.
 - [x] Führe verfügbare Checks aus und dokumentiere Einschränkungen.
 - [x] Dokumentiere das Ergebnis im Review.
 
 ## Review
 
-- `HelloWorld.Tests/SecurityTopicPayloadTests.cs` enthält weiterhin 5 Tests, jetzt aber ohne absichtlich fehlerhafte Assertion.
-- Die Testdatei verwendet jetzt 5 positive `StringAssert.Contains(...)`-Prüfungen und ist damit auf einen grünen Testlauf ausgelegt.
-- `.github/workflows/tests-and-coverage.yml` zeigt weiterhin Test- und Coverage-Auswertung in GitHub an, erwartet jetzt aber einen buildbaren Lauf mit 5 erfolgreichen Tests.
-- Beide Projektdateien wurden per XML-Parser erfolgreich geprüft.
-- Die Testdatei wurde auf 5 Testmethoden, 5 positive Assertions und das Fehlen von `DoesNotContain` geprüft.
-- Die Workflow-Datei wurde per YAML-Parser erfolgreich geprüft.
+- `README.md` nennt jetzt explizit `dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj` als lokalen Testbefehl.
+- Der CI-Workflow wird in der Doku ebenfalls klar als `dotnet test`-basiert beschrieben.
+- Der direkte Versuch, `dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj` auszuführen, scheiterte in dieser Umgebung daran, dass `dotnet` nicht installiert ist.
 - `git diff --check` lief erfolgreich.

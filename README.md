@@ -57,7 +57,13 @@ Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersich
 
 Das zusätzliche Projekt `HelloWorld.Tests/` enthält jetzt **5 erfolgreiche Unit Tests**, damit das Repository buildbar bleibt und trotzdem Test- sowie Coverage-Daten im CI zeigt.
 
-Der Workflow `tests-and-coverage.yml` sammelt Test- und Coverage-Daten und schreibt eine kompakte Coverage-Auswertung direkt in die GitHub Job Summary.
+Lokal ist der relevante Testbefehl:
+
+```bash
+dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj
+```
+
+Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten und schreibt eine kompakte Coverage-Auswertung direkt in die GitHub Job Summary.
 
 ## Hinweis
 

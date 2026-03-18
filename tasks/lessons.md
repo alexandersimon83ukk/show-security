@@ -1,4 +1,4 @@
 # Lessons Learned
 
-- Eine absichtlich rote Demo ist nur sinnvoll, wenn sie nicht im Widerspruch zur Anforderung steht, dass das Repository buildbar bleiben muss.
-- Coverage- und Testzusammenfassungen in GitHub sollten auch für grüne, buildbare CI-Läufe klar lesbar bleiben.
+- In einem C#-Repository sollte die primäre Validierung im Bericht klar als `dotnet test` benannt werden und nicht durch sprachfremde Hilfschecks ersetzt wirken.
+- Wenn die Umgebung das SDK nicht enthält, sollte trotzdem der echte Zielbefehl genannt und die Umgebungsgrenze transparent gemacht werden.
