@@ -1,21 +1,25 @@
 # Security Policy
 
+## Charakter dieses Repositories
+
+Dieses Repository ist aktuell eine **Demo-Anwendung**, die Security-Konzepte schematisch zeigt. Die Implementierung dient vor allem zur Veranschaulichung und ist **nicht** als produktionsreife Sicherheitsarchitektur zu verstehen.
+
+## Gezeigte Sicherheitsprinzipien
+
+- Eingaben validieren und auf einen erwarteten Zeichenvorrat begrenzen.
+- Secrets nicht im Klartext ausgeben.
+- Zugriffe anhand von Rollen und Aktionen einschränken.
+- Sicherheitsrelevante Ereignisse nachvollziehbar protokollieren.
+- Schutzmechanismen wie Rate Limiting als nächsten Ausbauschritt vorsehen.
+
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Dieses Repository ist eine laufende Demo. Sicherheitsverbesserungen werden auf dem aktuellen Stand des Default-Branches vorgenommen.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Version | Supported |
+| ------- | --------- |
+| main    | ✅ |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Wenn du in diesem Demo-Repository eine echte Schwachstelle oder eine unsichere Darstellung von Sicherheitskonzepten findest, eröffne bitte ein Issue oder melde den Befund direkt an die Maintainer des Repositories.
