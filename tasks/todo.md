@@ -1,17 +1,16 @@
 # Task Plan
 
 - [x] Prüfe Repository-Anweisungen, Nutzerfeedback und aktuellen Stand.
-- [x] Ergänze ein absichtlich verwundbares `UserRepository`-Beispiel für CodeQL.
-- [x] Dokumentiere die neue Demo-Datei in den GitHub-Actions-Unterlagen.
+- [x] Ergänze eine neue Klasse mit Nutzung von `System.Text.Json`.
+- [x] Füge die gewünschte Paket-Referenz `System.Text.Json` in die Projektdatei ein.
 - [x] Führe verfügbare Checks aus und dokumentiere Einschränkungen.
 - [x] Dokumentiere das Ergebnis im Review.
 
 ## Review
 
-- `Samples/UserRepository.cs` enthält jetzt eine absichtlich unsichere SQL-String-Konkatenation für die CodeQL-Demo.
-- `HelloWorld.csproj` referenziert `System.Data.SqlClient`, damit das Beispiel mit den verwendeten SQL-Typen vollständig im Projekt liegt.
-- `README.md`, `SECURITY.md` und die Actions-Übersicht verweisen jetzt explizit auf die Demo-Datei.
-- Die Workflow-YAMLs wurden mit Ruby (`YAML.load_file`) erfolgreich geparst.
+- `Samples/SecurityTopicPayload.cs` verwendet `System.Text.Json` für eine kleine JSON-Zusammenfassung.
+- `HelloWorld.csproj` enthält jetzt zusätzlich die gewünschte Paket-Referenz `System.Text.Json` in Version `8.0.4`.
+- `README.md` listet die neue JSON-Demo-Datei in der Repo-Struktur auf.
 - `HelloWorld.csproj` wurde per XML-Parser erfolgreich geprüft.
+- `Samples/SecurityTopicPayload.cs` wurde auf die erwartete Verwendung von `JsonSerializer.Serialize` geprüft.
 - `git diff --check` lief erfolgreich.
-- Die eigentliche Visualisierung des Befunds passiert weiterhin nach dem Push in GitHub Code Scanning.

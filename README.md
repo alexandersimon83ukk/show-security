@@ -48,6 +48,7 @@ Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersich
 - `.github/workflows/dependency-review.yml` – Dependency Review für PRs
 - `.github/workflows/security-topics.yml` – Präsentations-Workflow für Security-Themen
 - `Samples/UserRepository.cs` – absichtlich unsicheres SQL-Beispiel für CodeQL
+- `Samples/SecurityTopicPayload.cs` – kleine JSON-Demo mit `System.Text.Json`
 - `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
 
 ## Hinweis

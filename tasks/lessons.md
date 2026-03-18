@@ -1,4 +1,4 @@
 # Lessons Learned
 
-- Wenn der Nutzer eine konkrete Demo für ein Security-Tool wünscht, sollte ein absichtlich nachvollziehbares Beispiel im Repository liegen und in der Doku explizit benannt werden.
-- Bei GitHub-CodeQL-Demos hilft eine klar markierte Beispiel-Datei mehr als nur abstrakte Workflow-Beschreibungen.
+- Wenn der Nutzer eine konkrete Library-Version vorgibt, sollte die Projektdatei exakt auf diese Referenz angepasst werden.
+- Kleine Ergänzungen wie neue Demo-Klassen sollten trotzdem klar benannt und in den Arbeitsnotizen dokumentiert werden.
