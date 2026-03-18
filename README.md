@@ -42,6 +42,16 @@ dotnet run -- operator rotate-keys
 
 In der Konsolenausgabe wird dieses Secret **nur maskiert** dargestellt.
 
+
+## Projektstruktur
+
+Die Anwendung ist jetzt bewusst aufgeteilt, damit `Program.cs` sauber bleibt:
+
+- `App/` enthält den Start-Orchestrator der Demo.
+- `Models/` enthält Rollen, States und Datenmodelle.
+- `Services/` enthält Sanitizing, Autorisierung, Audit-Erzeugung und Feature-Katalog.
+- `Presentation/` enthält die Konsolen-Ausgabe.
+
 ## Ziel des Repos
 
 Das Projekt ist absichtlich klein gehalten, damit Security-Konzepte schnell gezeigt, erklärt und später erweitert werden können, z. B. mit:
