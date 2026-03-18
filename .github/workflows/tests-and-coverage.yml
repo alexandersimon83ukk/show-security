@@ -25,6 +25,10 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      # NEU: ReportGenerator installieren
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
       - name: Restore test project
         run: dotnet restore HelloWorld.Tests/HelloWorld.Tests.csproj
 
@@ -37,6 +41,15 @@ jobs:
             --logger "trx;LogFileName=test-results.trx" \
             --results-directory artifacts/test-results \
             --collect:"XPlat Code Coverage"
+
+      # NEU: Aus der Cobertura-XML den HTML-Report generieren
+      - name: Generate HTML Coverage Report
+        if: always()
+        run: |
+          reportgenerator \
+            -reports:"artifacts/test-results/**/coverage.cobertura.xml" \
+            -targetdir:"artifacts/coverage-html" \
+            -reporttypes:"Html"
 
       - name: Summarize test and coverage results
         if: always()
@@ -79,10 +92,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-and-coverage-artifacts
+          # ANGEPASST: Den neuen HTML-Ordner zu den Artifacts hinzufügen
           path: |
             artifacts/test-results/**/*.trx
             artifacts/test-results/**/coverage.cobertura.xml
             coverage-summary.md
+            artifacts/coverage-html/
 
       - name: Fail workflow when tests fail unexpectedly
         if: steps.test_run.outcome == 'failure'
