@@ -8,36 +8,116 @@ on:
 
 permissions:
   contents: read
+  security-events: read
 
 jobs:
   security-topics:
+    name: Security overview summary
     runs-on: ubuntu-latest
 
     steps:
-      - name: Write security topics summary
+      - name: Write enterprise security summary
+        env:
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          SERVER_URL: ${{ github.server_url }}
+          SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
-          # GitHub Security Themen in diesem Repo
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          # Security Overview
 
-          Dieses Repository zeigt Security-Schwerpunkte direkt über GitHub Actions.
+          Repository: [\`${REPO}\`](${SERVER_URL}/${REPO})  
+          Branch: \`${REF_NAME}\`  
+          Commit: [\`${SHA}\`](${SERVER_URL}/${REPO}/commit/${SHA})  
+          Workflow Run: [Open run](${SERVER_URL}/${REPO}/actions/runs/${RUN_ID})
 
-          ## 1. Code Scanning mit CodeQL
-          - Workflow: `codeql.yml`
-          - Fokus: C# und GitHub Actions
-          - Zweck: Schwachstellen und unsichere Muster früh sichtbar machen
-          - Demo-Datei: `Samples/UserRepository.cs` mit absichtlicher SQL-String-Konkatenation
+          ---
 
-          ## 2. Dependency Review
-          - Workflow: `dependency-review.yml`
-          - Fokus: Pull Requests
-          - Zweck: riskante Dependency-Änderungen direkt im Review sichtbar machen
+          ## Executive Summary
 
-          ## 3. Workflow Hardening
-          - In allen Workflows werden minimale `permissions` gesetzt
-          - Das demonstriert das Prinzip Least Privilege für GitHub Actions
+          This repository demonstrates a layered GitHub-native security setup for .NET and GitHub Actions.
 
-          ## 4. Sichtbarkeit in GitHub
-          - Ergebnisse erscheinen im Actions-Tab
-          - CodeQL-Ergebnisse erscheinen zusätzlich im Security-/Code-scanning-Bereich
-          - Dependency Review erscheint direkt am Pull Request
+          | Control Area | Purpose | Where to view |
+          |---|---|---|
+          | Code Scanning (CodeQL) | Detect insecure code patterns and vulnerabilities | [Code scanning alerts](${SERVER_URL}/${REPO}/security/code-scanning) |
+          | Dependency Review | Block risky dependency changes in pull requests | Pull request checks / review |
+          | Dependency Graph / Dependabot | Track dependencies and surface vulnerable packages | [Dependency graph](${SERVER_URL}/${REPO}/network/dependencies) / [Dependabot alerts](${SERVER_URL}/${REPO}/security/dependabot) |
+          | Workflow Hardening | Reduce GitHub Actions token scope via least privilege | Workflow files in \`.github/workflows\` |
+          | Test & Coverage Reporting | Show test status and publish HTML coverage report | [Actions](${SERVER_URL}/${REPO}/actions) / [Coverage Page](https://alexandersimon83ukk.github.io/show-security/) |
+
+          ---
+
+          ## Security Controls Implemented
+
+          ### 1. Code Scanning with CodeQL
+          - Scope: C# and GitHub Actions
+          - Objective: identify insecure coding patterns, injection risks, and workflow misconfigurations early
+          - Typical result location: [Security > Code scanning](${SERVER_URL}/${REPO}/security/code-scanning)
+
+          ### 2. Dependency Review
+          - Scope: pull requests into \`main\`
+          - Objective: highlight risky package changes before merge
+          - Best use case: supply-chain guardrail during review, not full repository SCA
+
+          ### 3. Software Composition Analysis (SCA)
+          - Backed by GitHub Dependency Graph and Dependabot alerts
+          - NuGet dependencies can be submitted automatically through GitHub Actions
+          - Result locations:
+            - [Dependency graph](${SERVER_URL}/${REPO}/network/dependencies)
+            - [Dependabot alerts](${SERVER_URL}/${REPO}/security/dependabot)
+
+          ### 4. Workflow Hardening
+          - Workflows should use minimal permissions by default
+          - Principle applied: **least privilege**
+          - Example: grant write permissions only where deployment or security upload really requires them
+
+          ### 5. Test and Coverage Visibility
+          - Test execution and coverage summary are shown in Actions
+          - HTML coverage report is published to GitHub Pages
+          - Coverage URL: [https://alexandersimon83ukk.github.io/show-security/](https://alexandersimon83ukk.github.io/show-security/)
+
+          ---
+
+          ## Operating Model
+
+          | Event | Primary Control | Expected Outcome |
+          |---|---|---|
+          | Pull Request | Dependency Review, CodeQL checks, tests | risky changes are caught before merge |
+          | Push to main | coverage publication, overview refresh, branch protection checks | trusted branch remains observable and auditable |
+          | Security triage | Dependabot + Code Scanning | vulnerabilities and code issues are reviewed centrally |
+
+          ---
+
+          ## Recommended Branch Protection Baseline
+
+          - Require pull request before merging
+          - Require status checks to pass
+          - Require CodeQL and test workflows
+          - Dismiss stale approvals on new commits
+          - Restrict direct pushes to \`main\`
+
+          ---
+
+          ## Reviewer Guidance
+
+          When reviewing a change in this repository, check these areas:
+
+          1. **Code scanning alerts** for unsafe code patterns  
+          2. **Dependency Review** for newly introduced packages or version jumps  
+          3. **Dependabot alerts** for known vulnerable packages already present  
+          4. **Coverage report** to confirm test visibility and regression confidence  
+          5. **Workflow permissions** to ensure no unnecessary token expansion was introduced
+
+          ---
+
+          ## Quick Links
+
+          - [Repository](${SERVER_URL}/${REPO})
+          - [Actions](${SERVER_URL}/${REPO}/actions)
+          - [Code scanning](${SERVER_URL}/${REPO}/security/code-scanning)
+          - [Dependabot alerts](${SERVER_URL}/${REPO}/security/dependabot)
+          - [Dependency graph](${SERVER_URL}/${REPO}/network/dependencies)
+          - [Coverage report](https://alexandersimon83ukk.github.io/show-security/)
+
           EOF
