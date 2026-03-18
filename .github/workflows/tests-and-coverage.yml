@@ -113,3 +113,10 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Add GitHub Pages link to summary
+        if: always()
+        run: |
+          echo "## 🌐 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "👉 ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
