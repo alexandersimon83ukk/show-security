@@ -15,8 +15,8 @@ env:
   PROJECT_ID: 'ukk-dev-api-keys-to-be-deleted'
   REGION: 'europe-west3'
   GAR_LOCATION: 'europe-west3-docker.pkg.dev'
-  REPOSITORY: 'kritis-app-repo'
-  IMAGE_NAME: 'demo-app'
+  REPOSITORY: 'show-security-repo'
+  IMAGE_NAME: 'show-security-image'
 
   # Die generierten Werte aus deinem Cloud Shell Setup
   SERVICE_ACCOUNT: 'github-actions-sa@ukk-dev-api-keys-to-be-deleted.iam.gserviceaccount.com'
