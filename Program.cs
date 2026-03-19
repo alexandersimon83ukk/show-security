@@ -1,4 +1,14 @@
-using System.Text;
+using ShowSecurity.Services;
 
-Console.OutputEncoding = Encoding.UTF8;
-Console.WriteLine("Dieses Repo zeigt GitHub-Security-Themen über GitHub Actions. Siehe .github/workflows/.");
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+builder.Services.AddSingleton<IScannerDemoService, ScannerDemoService>();
+
+var app = builder.Build();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapControllers();
+
+app.Run();

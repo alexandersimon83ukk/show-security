@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Show Security Scanner Demo</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8);
+        }
+
+        main {
+            width: min(32rem, calc(100% - 2rem));
+            padding: 2rem;
+            border-radius: 1.25rem;
+            background: rgba(15, 23, 42, 0.88);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 2rem;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .number-card {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background: rgba(59, 130, 246, 0.22);
+            border: 1px solid rgba(191, 219, 254, 0.3);
+        }
+
+        .label {
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #93c5fd;
+        }
+
+        #random-value {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        button {
+            border: 0;
+            border-radius: 999px;
+            padding: 0.9rem 1.4rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #dbeafe;
+        }
+
+        #status {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>GCP Web Security Scanner demo</h1>
+        <p>
+            This tiny UI gives you one obvious interaction to crawl: click the button and watch the random value change.
+            It is intentionally simple so you can point GCP Web Security Scanner at a live page without extra setup noise.
+        </p>
+
+        <section class="number-card" aria-live="polite">
+            <span class="label">Random value</span>
+            <span id="random-value">----</span>
+        </section>
+
+        <button id="refresh-button" type="button">Generate random number</button>
+        <p id="status">Press the button to load the first value.</p>
+    </main>
+
+    <script>
+        const randomValue = document.getElementById('random-value');
+        const status = document.getElementById('status');
+        const refreshButton = document.getElementById('refresh-button');
+
+        async function loadRandomNumber() {
+            status.textContent = 'Loading a fresh value...';
+
+            try {
+                const response = await fetch('/api/random', { method: 'GET' });
+                const data = await response.json();
+
+                randomValue.textContent = data.value;
+                status.textContent = data.scannerHint;
+            } catch (error) {
+                randomValue.textContent = 'ERR';
+                status.textContent = 'Could not load a random number.';
+            }
+        }
+
+        refreshButton.addEventListener('click', loadRandomNumber);
+    </script>
+</body>
+</html>
