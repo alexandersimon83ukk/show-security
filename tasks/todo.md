@@ -1,10 +1,10 @@
-- [x] Inspect current web app and refactor scope
-- [x] Introduce controller and service layers for the scanner demo
-- [x] Verify tests/runtime behavior and update docs
-- [x] Commit changes and refresh PR metadata
+## Plan
+- [x] Inspect startup/runtime issue
+- [x] Implement container fix for PORT=8080
+- [x] Validate locally
+- [x] Review and summarize
 
 ## Review
-
-- Replaced inline minimal API handlers with a controller mapped under `/api`.
-- Added a dedicated scanner demo service plus a response model to keep the endpoint logic out of `Program.cs`.
-- Kept the single-button front-end flow intact so the GCP Web Security Scanner demo still behaves the same from the browser.
+- Root cause 1: `Dockerfile` only ran `echo`, so the container never launched the web app.
+- Root cause 2: the ASP.NET app listened on `localhost:5000` when only `PORT=8080` was provided.
+- Fix: publish and run the ASP.NET app in Docker, and map `PORT` to `0.0.0.0` in `Program.cs` when platform URL settings are absent.
