@@ -6,7 +6,7 @@ public class UserRepository
 {
     public void GetUserDetails(string userInputUsername)
     {
-        string connectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;";
+        string connectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;Encrypt=True;";
 
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
@@ -26,7 +26,7 @@ public class UserRepository
 
      public void GetUserDetails2(string userInputUsername)
     {
-        string connectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;";
+        string connectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;Encrypt=True;";
 
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
