@@ -65,3 +65,39 @@ jobs:
         run: |-
           docker push ${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
+
+
+# ... (dein bisheriger build-scan-and-push Job) ...
+
+  dast-scan:
+    name: Web Security Scan (DAST)
+    runs-on: ubuntu-latest
+    # In einer vollständigen Pipeline würde hier "needs: deploy" stehen, 
+    # damit der Scan erst startet, wenn die neue Version online ist.
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🕵️‍♂️ OWASP ZAP Baseline Scan ausführen
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          # Hier steht die Live-URL deiner Cloud Run App aus deinem Screenshot
+          target: 'https://show-security-image-341431032740.europe-west1.run.app'
+          
+          # Wir generieren wieder einen maschinenlesbaren Report für GitHub
+          format: 'sarif'
+          
+          # Für KRITIS: Setze dies auf "true", wenn die Pipeline rot werden 
+          # und fehlschlagen soll, sobald ZAP eine Schwachstelle findet.
+          # Für den ersten Test lassen wir es auf "false".
+          fail_action: false 
+
+      - name: 📊 ZAP Ergebnisse in GitHub Security Tab hochladen
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() # Lädt die Ergebnisse auch hoch, wenn ZAP Fehler findet
+        with:
+          sarif_file: 'results.sarif' # Standard-Dateiname der ZAP Action
+
+
+          
