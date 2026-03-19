@@ -1,0 +1,4 @@
+bin/
+obj/
+HelloWorld.Tests/bin/
+HelloWorld.Tests/obj/

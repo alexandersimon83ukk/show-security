@@ -53,6 +53,24 @@ Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersich
 - `.github/workflows/tests-and-coverage.yml` – Testlauf plus Coverage-Auswertung im GitHub-UI
 - `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
 
+
+## Lokale UI für den GCP Web Security Scanner
+
+Zusätzlich zur GitHub-Actions-Demo startet das Projekt jetzt eine **minimale Weboberfläche**:
+
+- Eine Seite mit genau **einem Button**
+- Ein zufälliger Zahlenwert, der per Klick über `/api/random` neu geladen wird
+- Ein bewusst einfacher Flow, damit sich die Anwendung leicht mit dem **GCP Web Security Scanner** vorführen lässt
+- Die API ist bewusst in **Controller- und Service-Struktur** aufgeteilt, damit die Demo näher an einer realen Web-App ist
+
+Lokal startest du die UI mit:
+
+```bash
+dotnet run --project HelloWorld.csproj
+```
+
+Danach ist die Demo standardmäßig unter `http://localhost:5000` oder der von ASP.NET ausgegebenen URL erreichbar.
+
 ## Tests
 
 Das zusätzliche Projekt `HelloWorld.Tests/` enthält jetzt **5 erfolgreiche Unit Tests**, damit das Repository buildbar bleibt und trotzdem Test- sowie Coverage-Daten im CI zeigt.
