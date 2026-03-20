@@ -1,9 +1,9 @@
 ## Plan
-- [x] Inspect the current DAST job summary behavior in the affected workflows
-- [x] Reuse the ZAP high-level summary generation in the Build, Scan & Push workflow
-- [x] Validate the updated workflows and document the result
+- [x] Inspect the existing workflow summary generation for coverage and ZAP scan outputs
+- [x] Add a ZAP high-level risk summary to the GitHub Action step summary in the same style as the coverage section
+- [x] Validate the workflow changes and update the review notes
 
 ## Review
-- Extracted the ZAP markdown parsing into `.github/scripts/generate-zap-summary.py`, so both workflows now render the same high-level alert summary with total alerts, highest risk, false positives, and the per-risk table.
-- Added the reusable summary step to the `dast-scan` job in `build-and-push.yml`, so the job summary no longer only shows the SARIF fallback note.
-- Kept the existing SARIF upload fallback note intact, but it now appears alongside the actual DAST evaluation instead of replacing it.
+- Added a dedicated workflow step after the OWASP ZAP baseline action that parses `report_md.md` and appends a high-level risk table plus false-positive count to `$GITHUB_STEP_SUMMARY`.
+- Kept the summary generation scoped to `main`, matching the existing ZAP execution behavior and avoiding noise on pull requests.
+- Validated the regex parsing against a representative ZAP markdown sample and confirmed the workflow still parses as YAML with Ruby's standard library.

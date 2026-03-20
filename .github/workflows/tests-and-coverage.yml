@@ -102,7 +102,52 @@ jobs:
       - name: Summarize OWASP ZAP results
         if: always() && github.ref == 'refs/heads/main'
         run: |
-          python .github/scripts/generate-zap-summary.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          report_file = Path('report_md.md')
+          summary_lines = ['# OWASP ZAP-Auswertung', '']
+
+          if not report_file.exists():
+              summary_lines.append('- Der ZAP-Baseline-Scan hat in diesem Lauf keinen Markdown-Report (`report_md.md`) erzeugt.')
+          else:
+              report_text = report_file.read_text(encoding='utf-8', errors='ignore')
+
+              table_match = re.search(
+                  r"Summary of Alerts\s*\n(?:.*?\n)*?\|\s*Risk Level\s*\|\s*Number of Alerts\s*\|\s*\n\|(?:[^\n]+)\|\s*\n((?:\|[^\n]+\n)+)",
+                  report_text,
+                  re.IGNORECASE,
+              )
+              rows = []
+              if table_match:
+                  for raw_line in table_match.group(1).splitlines():
+                      columns = [column.strip() for column in raw_line.strip().strip('|').split('|')]
+                      if len(columns) >= 2:
+                          rows.append((columns[0], columns[1]))
+
+              false_positive_match = re.search(r"False Positives:\s*(\d+)", report_text, re.IGNORECASE)
+              false_positives = false_positive_match.group(1) if false_positive_match else 'n/a'
+
+              summary_lines.extend([
+                  '| Risk Level | Number of Alerts |',
+                  '| --- | ---: |',
+              ])
+
+              if rows:
+                  summary_lines.extend(f'| {risk} | {count} |' for risk, count in rows)
+              else:
+                  summary_lines.append('| Summary unavailable | Report konnte nicht geparst werden |')
+
+              summary_lines.extend([
+                  '',
+                  f'- False Positives: **{false_positives}**',
+              ])
+
+          summary = '\n'.join(summary_lines) + '\n'
+
+          (Path.cwd() / 'zap-summary.md').write_text(summary, encoding='utf-8')
+          PY
           cat zap-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Prepare combined GitHub Pages site
