@@ -1,11 +1,9 @@
 ## Plan
-- [x] Inspect existing GitHub Pages, coverage, and ZAP workflow setup
-- [x] Add main-branch publication for the ZAP scan report analogous to the coverage report
-- [x] Update documentation/overview links so both published reports are discoverable
-- [x] Validate workflow syntax/behavior and summarize results
+- [x] Inspect the existing workflow summary generation for coverage and ZAP scan outputs
+- [x] Add a ZAP high-level risk summary to the GitHub Action step summary in the same style as the coverage section
+- [x] Validate the workflow changes and update the review notes
 
 ## Review
-- Extended `.github/workflows/tests-and-coverage.yml` so pushes to `main` now build a combined GitHub Pages artifact containing a landing page, the coverage report, and a published OWASP ZAP baseline report.
-- Kept PR behavior safe by limiting Pages upload/deploy and the ZAP scan to `refs/heads/main`.
-- Updated the security overview workflow and README so both report URLs are visible in GitHub and repository documentation.
-- Validated the changed workflow YAML structure with Ruby's YAML parser and re-ran the .NET test suite locally.
+- Added a dedicated workflow step after the OWASP ZAP baseline action that parses `report_md.md` and appends a high-level risk table plus false-positive count to `$GITHUB_STEP_SUMMARY`.
+- Kept the summary generation scoped to `main`, matching the existing ZAP execution behavior and avoiding noise on pull requests.
+- Validated the regex parsing against a representative ZAP markdown sample and confirmed the workflow still parses as YAML with Ruby's standard library.
