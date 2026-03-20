@@ -1,4 +1,4 @@
-name: Web Security Scan (DAST)
+name: DAST / Web Security Scan
 
 on:
   push:
