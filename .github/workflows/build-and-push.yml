@@ -96,6 +96,12 @@ jobs:
           # Für den ersten Test lassen wir es auf "false".
           fail_action: false
 
+      - name: 📝 OWASP ZAP-Ergebnisse zusammenfassen
+        if: always()
+        run: |
+          python .github/scripts/generate-zap-summary.py
+          cat zap-summary.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: 🧾 ZAP Report in SARIF umwandeln
         id: zap_to_ghas
         if: always()
