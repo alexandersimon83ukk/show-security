@@ -1,4 +1,4 @@
-name: Tests and Coverage
+name: Quality / Tests and Coverage
 
 on:
   push:
@@ -18,8 +18,6 @@ jobs:
   tests-and-coverage:
     runs-on: ubuntu-latest
 
-    env:
-      ZAP_TARGET_URL: https://show-security-image-341431032740.europe-west1.run.app
 
     steps:
       - name: Checkout
@@ -88,100 +86,11 @@ jobs:
           PY
           cat coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run OWASP ZAP baseline scan for Pages
-        if: github.ref == 'refs/heads/main'
-        id: zap_scan
-        continue-on-error: true
-        uses: zaproxy/action-baseline@v0.15.0
-        with:
-          target: ${{ env.ZAP_TARGET_URL }}
-          allow_issue_writing: false
-          fail_action: false
-          artifact_name: zap_scan_pages
-
-      - name: Summarize OWASP ZAP results
+      - name: Prepare GitHub Pages site
         if: always() && github.ref == 'refs/heads/main'
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          report_file = Path('report_md.md')
-          summary_lines = ['# OWASP ZAP-Auswertung', '']
-
-          if not report_file.exists():
-              summary_lines.append('- Der ZAP-Baseline-Scan hat in diesem Lauf keinen Markdown-Report (`report_md.md`) erzeugt.')
-          else:
-              report_text = report_file.read_text(encoding='utf-8', errors='ignore')
-
-              table_match = re.search(
-                  r"Summary of Alerts\s*\n(?:.*?\n)*?\|\s*Risk Level\s*\|\s*Number of Alerts\s*\|\s*\n\|(?:[^\n]+)\|\s*\n((?:\|[^\n]+\n)+)",
-                  report_text,
-                  re.IGNORECASE,
-              )
-              rows = []
-              if table_match:
-                  for raw_line in table_match.group(1).splitlines():
-                      columns = [column.strip() for column in raw_line.strip().strip('|').split('|')]
-                      if len(columns) >= 2:
-                          rows.append((columns[0], columns[1]))
-
-              false_positive_match = re.search(r"False Positives:\s*(\d+)", report_text, re.IGNORECASE)
-              false_positives = false_positive_match.group(1) if false_positive_match else 'n/a'
-
-              summary_lines.extend([
-                  '| Risk Level | Number of Alerts |',
-                  '| --- | ---: |',
-              ])
-
-              if rows:
-                  summary_lines.extend(f'| {risk} | {count} |' for risk, count in rows)
-              else:
-                  summary_lines.append('| Summary unavailable | Report konnte nicht geparst werden |')
-
-              summary_lines.extend([
-                  '',
-                  f'- False Positives: **{false_positives}**',
-              ])
-
-          summary = '\n'.join(summary_lines) + '\n'
-
-          (Path.cwd() / 'zap-summary.md').write_text(summary, encoding='utf-8')
-          PY
-          cat zap-summary.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Prepare combined GitHub Pages site
-        if: always() && github.ref == 'refs/heads/main'
-        run: |
-          mkdir -p artifacts/pages/coverage artifacts/pages/zap-scan
+          mkdir -p artifacts/pages/coverage
           cp -R artifacts/coverage-html/. artifacts/pages/coverage/
-
-          if [ -f report_html.html ]; then
-            cp report_html.html artifacts/pages/zap-scan/index.html
-          else
-            cat <<'HTML' > artifacts/pages/zap-scan/index.html
-          <!DOCTYPE html>
-          <html lang="en">
-            <head>
-              <meta charset="utf-8" />
-              <title>ZAP Scan Report unavailable</title>
-            </head>
-            <body>
-              <h1>ZAP Scan Report unavailable</h1>
-              <p>The OWASP ZAP baseline scan did not produce <code>report_html.html</code> in this run.</p>
-              <p>Please inspect the workflow logs for details.</p>
-            </body>
-          </html>
-          HTML
-          fi
-
-          if [ -f report_md.md ]; then
-            cp report_md.md artifacts/pages/zap-scan/report.md
-          fi
-
-          if [ -f report_json.json ]; then
-            cp report_json.json artifacts/pages/zap-scan/report.json
-          fi
 
           cat <<'HTML' > artifacts/pages/index.html
           <!DOCTYPE html>
@@ -200,16 +109,11 @@ jobs:
                 a {
                   color: #0969da;
                 }
-                .cards {
-                  display: grid;
-                  gap: 1rem;
-                  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-                  margin-top: 1.5rem;
-                }
                 .card {
                   border: 1px solid #d0d7de;
                   border-radius: 12px;
                   padding: 1rem 1.25rem;
+                  max-width: 32rem;
                 }
                 code {
                   background: #f6f8fa;
@@ -220,19 +124,12 @@ jobs:
             </head>
             <body>
               <h1>show-security reports</h1>
-              <p>This GitHub Pages deployment publishes two main-branch reports for the repository.</p>
-              <div class="cards">
-                <section class="card">
-                  <h2>Coverage report</h2>
-                  <p>HTML code coverage generated from the .NET test run.</p>
-                  <p><a href="./coverage/index.html">Open coverage report</a></p>
-                </section>
-                <section class="card">
-                  <h2>ZAP scan report</h2>
-                  <p>OWASP ZAP baseline report for the deployed demo application.</p>
-                  <p><a href="./zap-scan/index.html">Open ZAP scan report</a></p>
-                </section>
-              </div>
+              <p>This GitHub Pages deployment publishes the main-branch coverage report for the repository.</p>
+              <section class="card">
+                <h2>Coverage report</h2>
+                <p>HTML code coverage generated from the .NET test run.</p>
+                <p><a href="./coverage/index.html">Open coverage report</a></p>
+              </section>
             </body>
           </html>
           HTML
@@ -268,4 +165,3 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- Landing page: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Coverage report: ${{ steps.deployment.outputs.page_url }}coverage/" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ZAP scan report: ${{ steps.deployment.outputs.page_url }}zap-scan/" >> "$GITHUB_STEP_SUMMARY"

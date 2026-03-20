@@ -1,16 +1,16 @@
-name: Dependency Review
+name: SCA / CVE / Dependency Review
 
 on:
   pull_request:
     branches:
       - main
-  
 
 permissions:
   contents: read
 
 jobs:
   dependency-review:
+    name: SCA / CVE / Dependency Review
     runs-on: ubuntu-latest
 
     steps:
