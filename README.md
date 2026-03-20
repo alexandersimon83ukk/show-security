@@ -86,9 +86,9 @@ Lokal ist der relevante Testbefehl:
 dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj
 ```
 
-Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten und veröffentlicht anschließend den Coverage-Report auf GitHub Pages.
+Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten und veröffentlicht anschließend auf GitHub Pages sowohl den Coverage-Report als auch einen verlinkten Snapshot des aktuellen OWASP-ZAP-HTML-Reports.
 
-Der Workflow `web-security-scan-dast.yml` erzeugt den separaten DAST-Report als Workflow-Artefakt, sodass SAST / SCA / CVE und DAST im Actions-Tab auf den ersten Blick getrennt sichtbar bleiben.
+Der Workflow `web-security-scan-dast.yml` bleibt weiterhin der dedizierte DAST-Workflow im Actions-Tab und erzeugt zusätzlich die vollständigen DAST-Artefakte pro Lauf, sodass SAST / SCA / CVE und DAST im Actions-Tab auf den ersten Blick getrennt sichtbar bleiben.
 
 ## Hinweis
 
