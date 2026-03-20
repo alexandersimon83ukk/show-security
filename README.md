@@ -81,7 +81,10 @@ Lokal ist der relevante Testbefehl:
 dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj
 ```
 
-Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten und schreibt eine kompakte Coverage-Auswertung direkt in die GitHub Job Summary.
+Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten, führt auf `main` zusätzlich einen OWASP-ZAP-Baseline-Scan gegen die bereitgestellte Demo-URL aus und veröffentlicht anschließend eine GitHub-Pages-Landing-Page mit zwei Reports:
+
+- Coverage Report unter `https://alexandersimon83ukk.github.io/show-security/coverage/`
+- ZAP Scan Report unter `https://alexandersimon83ukk.github.io/show-security/zap-scan/`
 
 ## Hinweis
 
