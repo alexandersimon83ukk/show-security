@@ -97,8 +97,31 @@ jobs:
           fail_action: false
 
       - name: 🧾 ZAP Report in SARIF umwandeln
+        id: zap_to_ghas
         if: always()
+        continue-on-error: true
         uses: SvanBoxel/zaproxy-to-ghas@main
+
+      - name: 📦 SARIF Report als Artifact hochladen
+        if: ${{ always() && hashFiles('results.sarif') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: zaproxy-sarif-report
+          path: results.sarif
+          if-no-files-found: error
+
+      - name: 📝 Hinweis zur inkompatiblen Legacy-Artifact-Erstellung
+        if: ${{ always() && steps.zap_to_ghas.outcome == 'failure' && hashFiles('results.sarif') != '' }}
+        run: |
+          cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          ## ZAP SARIF-Konvertierung fortgesetzt
+
+          Die Action `SvanBoxel/zaproxy-to-ghas@main` hat die Datei `results.sarif` erzeugt,
+          aber ihr interner Legacy-Artifact-Upload ist auf GitHub fehlgeschlagen.
+          Der Workflow lädt die erzeugte SARIF-Datei deshalb mit `actions/upload-artifact@v4`
+          erneut als `zaproxy-sarif-report` hoch und veröffentlicht sie zusätzlich im
+          GitHub Security Tab.
+          EOF
 
       - name: 📊 ZAP Ergebnisse in GitHub Security Tab hochladen
         if: ${{ always() && hashFiles('results.sarif') != '' }}
