@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  security-events: write
 
 env:
   # Deine Google Cloud Projekt-Daten
@@ -80,24 +81,42 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🕵️‍♂️ OWASP ZAP Baseline Scan ausführen
-        uses: zaproxy/action-baseline@v0.14.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           # Hier steht die Live-URL deiner Cloud Run App aus deinem Screenshot
           target: 'https://show-security-image-341431032740.europe-west1.run.app'
-          
-          # Wir generieren wieder einen maschinenlesbaren Report für GitHub
-          format: 'sarif'
-          
-          # Für KRITIS: Setze dies auf "true", wenn die Pipeline rot werden 
+
+          # Die Baseline Action erstellt selbst keine SARIF-Datei.
+          # Wir deaktivieren das Issue-Schreiben und konvertieren die Reports
+          # anschließend separat für GitHub Code Scanning.
+          allow_issue_writing: false
+
+          # Für KRITIS: Setze dies auf "true", wenn die Pipeline rot werden
           # und fehlschlagen soll, sobald ZAP eine Schwachstelle findet.
           # Für den ersten Test lassen wir es auf "false".
-          fail_action: false 
+          fail_action: false
+
+      - name: 🧾 ZAP Report in SARIF umwandeln
+        if: always()
+        uses: SvanBoxel/zaproxy-to-ghas@main
 
       - name: 📊 ZAP Ergebnisse in GitHub Security Tab hochladen
-        uses: github/codeql-action/upload-sarif@v3
-        if: always() # Lädt die Ergebnisse auch hoch, wenn ZAP Fehler findet
+        if: ${{ always() && hashFiles('results.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: 'results.sarif' # Standard-Dateiname der ZAP Action
+          sarif_file: 'results.sarif'
+          category: zap-baseline
+
+      - name: ℹ️ Hinweis bei fehlender SARIF-Datei
+        if: ${{ always() && hashFiles('results.sarif') == '' }}
+        run: |
+          cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          ## ZAP SARIF Upload übersprungen
+
+          Die ZAP Baseline Action erstellt keine Datei `results.sarif` direkt.
+          Der Upload-Schritt wurde daher nur ausgeführt, wenn nach der
+          Konvertierung tatsächlich eine SARIF-Datei vorhanden war.
+          EOF
 
 
           
