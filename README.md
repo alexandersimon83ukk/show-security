@@ -4,11 +4,12 @@ Dieses Repository zeigt **GitHub-Security-Themen direkt über GitHub Actions** s
 
 ## Was dieses Repo demonstriert
 
-Die zentralen Sicherheits-Themen werden über Workflows in `.github/workflows/` sichtbar gemacht:
+Die zentralen Sicherheits-Themen werden über klar benannte Workflows in `.github/workflows/` sichtbar gemacht:
 
-- **Code Scanning mit CodeQL** für C# und GitHub Actions.
-- **Dependency Review** für Pull Requests.
-- **Sicherheits-Übersicht als Workflow Summary** mit den wichtigsten GitHub-Security-Themen.
+- **SAST / CodeQL** für C# und GitHub Actions.
+- **SCA / CVE / Dependency Review** für Pull Requests.
+- **Web Security Scan (DAST)** als OWASP-ZAP-Baseline-Scan nur auf `main`.
+- **Quality / Tests and Coverage** für Tests, Coverage und GitHub Pages.
 - **Minimale Workflow-Permissions** als Teil der Workflow-Härtung.
 - **Ein absichtlich unsicheres SQL-Beispiel** in `Samples/UserRepository.cs`, damit CodeQL einen nachvollziehbaren Befund zeigen kann.
 
@@ -16,10 +17,10 @@ Die zentralen Sicherheits-Themen werden über Workflows in `.github/workflows/` 
 
 ### `codeql.yml`
 
-Zeigt GitHub Code Scanning mit CodeQL für zwei Bereiche:
+Der Workflow heißt im Actions-Tab **`SAST / CodeQL`** und zeigt GitHub Code Scanning mit CodeQL für zwei Bereiche:
 
-- `csharp`
-- `actions`
+- `C#`
+- `GitHub Actions`
 
 Zusätzlich werden enge Berechtigungen gesetzt und `security-extended` Queries aktiviert.
 
@@ -27,32 +28,36 @@ Als bewusst verwundbares Beispiel dient `Samples/UserRepository.cs`: Dort wird `
 
 ### `dependency-review.yml`
 
-Prüft Pull Requests auf riskante Dependency-Änderungen mit der offiziellen GitHub Dependency Review Action.
+Der Workflow heißt im Actions-Tab **`SCA / CVE / Dependency Review`** und prüft Pull Requests auf riskante Dependency-Änderungen mit der offiziellen GitHub Dependency Review Action.
 
-### `security-topics.yml`
+### `web-security-scan-dast.yml`
 
-Schreibt bei `workflow_dispatch` oder Push auf `main` eine gut lesbare Übersicht in die GitHub Actions Job Summary. Damit kann man die Sicherheits-Themen direkt im Actions-Tab präsentieren.
+Der Workflow heißt im Actions-Tab **`Web Security Scan (DAST)`** und führt einen OWASP-ZAP-Baseline-Scan gegen die bereitgestellte Demo-URL aus. Er wird nur für `push` auf `main` oder manuell per `workflow_dispatch` gestartet.
+
+### `tests-and-coverage.yml`
+
+Der Workflow heißt im Actions-Tab **`Quality / Tests and Coverage`**. Er führt die .NET-Tests aus, erzeugt einen Coverage-Report und veröffentlicht den HTML-Report auf GitHub Pages.
 
 ## So zeigst du die Themen auf GitHub
 
 1. Repository nach GitHub pushen.
 2. Im Tab **Actions** die Workflows ausführen bzw. bei PRs triggern.
-3. Die Job Summaries und Security-Ergebnisse in GitHub zeigen:
-   - CodeQL / Code scanning
-   - Dependency Review in Pull Requests
-   - Workflow Summary mit den Security-Themen
+3. Die Namen sind jetzt direkt nach Security-Kategorie gegliedert:
+   - `SAST / CodeQL`
+   - `SCA / CVE / Dependency Review`
+   - `Web Security Scan (DAST)`
+   - `Quality / Tests and Coverage`
 
 ## Repo-Struktur
 
-- `.github/workflows/codeql.yml` – CodeQL Analyse
-- `.github/workflows/dependency-review.yml` – Dependency Review für PRs
-- `.github/workflows/security-topics.yml` – Präsentations-Workflow für Security-Themen
+- `.github/workflows/codeql.yml` – SAST mit CodeQL für C# und GitHub Actions
+- `.github/workflows/dependency-review.yml` – SCA/CVE-Check für PRs
+- `.github/workflows/web-security-scan-dast.yml` – dedizierter DAST-Workflow nur für `main`
+- `.github/workflows/tests-and-coverage.yml` – Testlauf plus Coverage-Auswertung im GitHub-UI
 - `Samples/UserRepository.cs` – absichtlich unsicheres SQL-Beispiel für CodeQL
 - `Samples/SecurityTopicPayload.cs` – kleine JSON-Demo mit `System.Text.Json`
 - `HelloWorld.Tests/` – separates Testprojekt mit 5 erfolgreichen Unit Tests
-- `.github/workflows/tests-and-coverage.yml` – Testlauf plus Coverage-Auswertung im GitHub-UI
 - `Program.cs` – nur ein minimaler Hinweis auf den Actions-Fokus
-
 
 ## Lokale UI für den GCP Web Security Scanner
 
@@ -60,7 +65,7 @@ Zusätzlich zur GitHub-Actions-Demo startet das Projekt jetzt eine **minimale We
 
 - Eine Seite mit genau **einem Button**
 - Ein zufälliger Zahlenwert, der per Klick über `/api/random` neu geladen wird
-- Ein bewusst einfacher Flow, damit sich die Anwendung leicht mit dem **GCP Web Security Scanner** vorführen lässt
+- Ein bewusst einfacher Flow, damit sich die Anwendung leicht mit einem **Web Security Scanner** vorführen lässt
 - Die API ist bewusst in **Controller- und Service-Struktur** aufgeteilt, damit die Demo näher an einer realen Web-App ist
 
 Lokal startest du die UI mit:
@@ -81,10 +86,9 @@ Lokal ist der relevante Testbefehl:
 dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj
 ```
 
-Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten, führt auf `main` zusätzlich einen OWASP-ZAP-Baseline-Scan gegen die bereitgestellte Demo-URL aus und veröffentlicht anschließend eine GitHub-Pages-Landing-Page mit zwei Reports:
+Der Workflow `tests-and-coverage.yml` verwendet ebenfalls `dotnet test`, sammelt Test- und Coverage-Daten und veröffentlicht anschließend den Coverage-Report auf GitHub Pages.
 
-- Coverage Report unter `https://alexandersimon83ukk.github.io/show-security/coverage/`
-- ZAP Scan Report unter `https://alexandersimon83ukk.github.io/show-security/zap-scan/`
+Der Workflow `web-security-scan-dast.yml` erzeugt den separaten DAST-Report als Workflow-Artefakt, sodass SAST / SCA / CVE und DAST im Actions-Tab auf den ersten Blick getrennt sichtbar bleiben.
 
 ## Hinweis
 

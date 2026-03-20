@@ -1,4 +1,4 @@
-name: CodeQL
+name: SAST / CodeQL
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - main
-  
   workflow_dispatch:
 
 permissions:
@@ -17,15 +16,17 @@ permissions:
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
+    name: SAST / CodeQL (${{ matrix.label }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - language: csharp
+          - label: C#
+            language: csharp
             build-mode: autobuild
-          - language: actions
+          - label: GitHub Actions
+            language: actions
             build-mode: none
 
     steps:
@@ -50,7 +51,7 @@ jobs:
         if: always()
         run: |
           cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
-          ## CodeQL Ergebnis-Hinweis
+          ## SAST / CodeQL Hinweis
 
           Dieser Workflow prüft den Code mit CodeQL und lädt die Ergebnisse in GitHub Code Scanning hoch.
 
