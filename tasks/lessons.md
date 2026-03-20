@@ -6,3 +6,4 @@
 - Bei neuen oder geänderten GitHub-Actions-Workflows sollten Drittanbieter-Actions direkt auf Commit-SHAs gepinnt werden, damit CodeQL keine Unpinned-Tag-Warnungen meldet.
 
 - Wenn der Nutzer eine Architekturpräferenz wie Service-/Controller-Struktur nachreicht, sollte die Web-Demo nicht bei Inline-Minimal-API-Handlern bleiben.
+- Wenn ein Reporting-Workflow in dedizierte GitHub-Actions-Dateien aufgeteilt wird, muss explizit geprüft werden, ob GitHub-Pages-Inhalte aus dem alten kombinierten Workflow weiterhin veröffentlicht werden.
