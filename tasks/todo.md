@@ -1,10 +1,11 @@
 ## Plan
-- [x] Inspect startup/runtime issue
-- [x] Implement container fix for PORT=8080
-- [x] Validate locally
-- [x] Review and summarize
+- [x] Inspect existing GitHub Pages, coverage, and ZAP workflow setup
+- [x] Add main-branch publication for the ZAP scan report analogous to the coverage report
+- [x] Update documentation/overview links so both published reports are discoverable
+- [x] Validate workflow syntax/behavior and summarize results
 
 ## Review
-- Root cause 1: `Dockerfile` only ran `echo`, so the container never launched the web app.
-- Root cause 2: the ASP.NET app listened on `localhost:5000` when only `PORT=8080` was provided.
-- Fix: publish and run the ASP.NET app in Docker, and map `PORT` to `0.0.0.0` in `Program.cs` when platform URL settings are absent.
+- Extended `.github/workflows/tests-and-coverage.yml` so pushes to `main` now build a combined GitHub Pages artifact containing a landing page, the coverage report, and a published OWASP ZAP baseline report.
+- Kept PR behavior safe by limiting Pages upload/deploy and the ZAP scan to `refs/heads/main`.
+- Updated the security overview workflow and README so both report URLs are visible in GitHub and repository documentation.
+- Validated the changed workflow YAML structure with Ruby's YAML parser and re-ran the .NET test suite locally.

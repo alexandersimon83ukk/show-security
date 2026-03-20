@@ -44,7 +44,7 @@ jobs:
           | Dependency Review | Block risky dependency changes in pull requests | Pull request checks / review |
           | Dependency Graph / Dependabot | Track dependencies and surface vulnerable packages | [Dependency graph](${SERVER_URL}/${REPO}/network/dependencies) / [Dependabot alerts](${SERVER_URL}/${REPO}/security/dependabot) |
           | Workflow Hardening | Reduce GitHub Actions token scope via least privilege | Workflow files in \`.github/workflows\` |
-          | Test & Coverage Reporting | Show test status and publish HTML coverage report | [Actions](${SERVER_URL}/${REPO}/actions) / [Coverage Page](https://alexandersimon83ukk.github.io/show-security/) |
+          | Test, Coverage & DAST Reporting | Show test status and publish both HTML coverage and ZAP scan reports | [Actions](${SERVER_URL}/${REPO}/actions) / [Reports Landing Page](https://alexandersimon83ukk.github.io/show-security/) |
 
           ---
 
@@ -72,10 +72,12 @@ jobs:
           - Principle applied: **least privilege**
           - Example: grant write permissions only where deployment or security upload really requires them
 
-          ### 5. Test and Coverage Visibility
+          ### 5. Test, Coverage, and DAST Visibility
           - Test execution and coverage summary are shown in Actions
-          - HTML coverage report is published to GitHub Pages
-          - Coverage URL: [https://alexandersimon83ukk.github.io/show-security/](https://alexandersimon83ukk.github.io/show-security/)
+          - GitHub Pages publishes a landing page plus separate coverage and ZAP scan reports
+          - Landing page URL: [https://alexandersimon83ukk.github.io/show-security/](https://alexandersimon83ukk.github.io/show-security/)
+          - Coverage URL: [https://alexandersimon83ukk.github.io/show-security/coverage/](https://alexandersimon83ukk.github.io/show-security/coverage/)
+          - ZAP scan URL: [https://alexandersimon83ukk.github.io/show-security/zap-scan/](https://alexandersimon83ukk.github.io/show-security/zap-scan/)
 
           ---
 
@@ -107,7 +109,8 @@ jobs:
           2. **Dependency Review** for newly introduced packages or version jumps  
           3. **Dependabot alerts** for known vulnerable packages already present  
           4. **Coverage report** to confirm test visibility and regression confidence  
-          5. **Workflow permissions** to ensure no unnecessary token expansion was introduced
+          5. **ZAP scan report** to review the published DAST findings for the deployed app  
+          6. **Workflow permissions** to ensure no unnecessary token expansion was introduced
 
           ---
 
@@ -118,6 +121,8 @@ jobs:
           - [Code scanning](${SERVER_URL}/${REPO}/security/code-scanning)
           - [Dependabot alerts](${SERVER_URL}/${REPO}/security/dependabot)
           - [Dependency graph](${SERVER_URL}/${REPO}/network/dependencies)
-          - [Coverage report](https://alexandersimon83ukk.github.io/show-security/)
+          - [Reports landing page](https://alexandersimon83ukk.github.io/show-security/)
+          - [Coverage report](https://alexandersimon83ukk.github.io/show-security/coverage/)
+          - [ZAP scan report](https://alexandersimon83ukk.github.io/show-security/zap-scan/)
 
           EOF
