@@ -96,6 +96,78 @@ jobs:
           # Für den ersten Test lassen wir es auf "false".
           fail_action: false
 
+      - name: 📝 OWASP ZAP-Ergebnisse zusammenfassen
+        if: always()
+        run: |
+          {
+            echo "## OWASP ZAP-Auswertung"
+            echo
+
+            if [ ! -f report_md.md ]; then
+              echo '- Der ZAP-Baseline-Scan hat in diesem Lauf keinen Markdown-Report (`report_md.md`) erzeugt.'
+            else
+              false_positives=$(sed -n 's/^False Positives: *//p' report_md.md | head -n1)
+              if [ -z "$false_positives" ]; then
+                false_positives="n/a"
+              fi
+
+              total_alerts=0
+              highest_risk="Kein Alert erkannt"
+              highest_priority=-1
+              rows_found=0
+              rows_file=$(mktemp)
+
+              while IFS='|' read -r _ raw_risk raw_count _; do
+                risk=$(echo "$raw_risk" | xargs)
+                count=$(echo "$raw_count" | grep -oE '[0-9]+' | head -n1)
+
+                if [ -z "$risk" ] || [ -z "$count" ]; then
+                  continue
+                fi
+
+                rows_found=1
+                total_alerts=$((total_alerts + count))
+
+                priority=-1
+                case $(echo "$risk" | tr '[:upper:]' '[:lower:]') in
+                  critical) priority=4 ;;
+                  high) priority=3 ;;
+                  medium) priority=2 ;;
+                  low) priority=1 ;;
+                  informational|info) priority=0 ;;
+                esac
+
+                if [ "$count" -gt 0 ] && [ "$priority" -gt "$highest_priority" ]; then
+                  highest_priority=$priority
+                  highest_risk=$risk
+                fi
+
+                echo "| $risk | $count |" >> "$rows_file"
+              done < <(awk '
+                BEGIN { in_table = 0 }
+                /^\|[[:space:]]*Risk Level[[:space:]]*\|[[:space:]]*Number of Alerts[[:space:]]*\|[[:space:]]*$/ { in_table = 1; next }
+                in_table && /^\|[[:space:]]*---/ { next }
+                in_table && /^\|/ { print; next }
+                in_table { exit }
+              ' report_md.md)
+
+              echo "- Alerts gesamt: **$total_alerts**"
+              echo "- Höchstes gefundenes Risiko: **$highest_risk**"
+              echo "- False Positives: **$false_positives**"
+              echo
+              echo "| Risk Level | Number of Alerts |"
+              echo "| --- | ---: |"
+
+              if [ "$rows_found" -eq 1 ]; then
+                cat "$rows_file"
+              else
+                echo "| Summary unavailable | Report konnte nicht geparst werden |"
+              fi
+
+              rm -f "$rows_file"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: 🧾 ZAP Report in SARIF umwandeln
         id: zap_to_ghas
         if: always()
