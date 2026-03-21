@@ -1,9 +1,9 @@
 ## Plan
-- [x] Inspect why the DAST report stopped being published on GitHub Pages after the workflow split
-- [x] Restore GitHub Pages publication for the ZAP HTML report without removing the dedicated DAST workflow
-- [x] Validate the workflow YAML, review the generated diff, and document the result
+- [x] Review the current Pages/DAST workflows and identify the duplicated report-generation path
+- [x] Refactor the workflows so coverage and DAST are each produced once and both are published on GitHub Pages
+- [x] Validate the workflow/scripts changes, review the diff, and document the result
 
 ## Review
-- Restored the GitHub Pages ZAP publication path by running the OWASP ZAP baseline scan again inside `tests-and-coverage.yml` for `main` builds, which lets the Pages deployment continue publishing a combined report site.
-- Kept `web-security-scan-dast.yml` as the dedicated DAST workflow for Actions visibility and per-run artifacts while the Pages site now links to the latest HTML ZAP snapshot again.
-- Validated the changed workflow files with Ruby's YAML parser and reviewed the resulting diff for the workflow, README, and task documentation updates.
+- Removed the redundant ZAP execution from `tests-and-coverage.yml`; that workflow now only builds the coverage report and uploads it as a dedicated Pages artifact for `main`.
+- Updated `web-security-scan-dast.yml` to reuse a shared Python helper that converts the ZAP outputs into a Pages-friendly DAST site fragment and uploads both the Actions artifact and the Pages artifact from the same scan run.
+- Added `publish-reports-pages.yml` so GitHub Pages is deployed from the latest successful coverage and DAST artifacts together, keeping both reports visible without regenerating either one in the other workflow.

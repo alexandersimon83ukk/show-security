@@ -31,56 +31,15 @@ jobs:
           fail_action: false
           artifact_name: web_security_scan_dast
 
-      - name: Summarize OWASP ZAP results
+      - name: Build DAST Pages artifact
         if: always()
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
+          python scripts/build_dast_pages.py --output-dir artifacts/pages/dast
+          cp artifacts/pages/dast/summary.md zap-summary.md
 
-          report_file = Path('report_md.md')
-          summary_lines = ['# Web Security Scan (DAST)', '']
-
-          if not report_file.exists():
-              summary_lines.append('- The ZAP baseline scan did not produce a Markdown report (`report_md.md`) in this run.')
-          else:
-              report_text = report_file.read_text(encoding='utf-8', errors='ignore')
-
-              table_match = re.search(
-                  r"Summary of Alerts\s*\n(?:.*?\n)*?\|\s*Risk Level\s*\|\s*Number of Alerts\s*\|\s*\n\|(?:[^\n]+)\|\s*\n((?:\|[^\n]+\n)+)",
-                  report_text,
-                  re.IGNORECASE,
-              )
-              rows = []
-              if table_match:
-                  for raw_line in table_match.group(1).splitlines():
-                      columns = [column.strip() for column in raw_line.strip().strip('|').split('|')]
-                      if len(columns) >= 2:
-                          rows.append((columns[0], columns[1]))
-
-              false_positive_match = re.search(r"False Positives:\s*(\d+)", report_text, re.IGNORECASE)
-              false_positives = false_positive_match.group(1) if false_positive_match else 'n/a'
-
-              summary_lines.extend([
-                  '| Risk Level | Number of Alerts |',
-                  '| --- | ---: |',
-              ])
-
-              if rows:
-                  summary_lines.extend(f'| {risk} | {count} |' for risk, count in rows)
-              else:
-                  summary_lines.append('| Summary unavailable | Report could not be parsed |')
-
-              summary_lines.extend([
-                  '',
-                  f'- False Positives: **{false_positives}**',
-              ])
-
-          summary = '\n'.join(summary_lines) + '\n'
-
-          (Path.cwd() / 'zap-summary.md').write_text(summary, encoding='utf-8')
-          PY
-          cat zap-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Summarize OWASP ZAP results
+        if: always()
+        run: cat zap-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload DAST artifacts
         if: always()
@@ -93,3 +52,12 @@ jobs:
             report_json.json
             zap-summary.md
           if-no-files-found: warn
+
+      - name: Upload DAST Pages artifact
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages-dast
+          path: artifacts/pages/dast/
+          if-no-files-found: error
+          retention-days: 7
